@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const Team = require("./model");
+const Team = require("./modelTeam");
+const Player = require("../player/modelPlayer");
 
 const router = new Router();
 
@@ -13,6 +14,18 @@ router.get("/team", async function(req, res, next) {
   }
 });
 
+router.get("/team/:id", (req, res, next) => {
+  const teamId = req.params.id;
+  console.log(teamId);
+  Team.findByPk(teamId).then(team => {
+    if (!team) {
+      res.status(404).send("Team not found!");
+    } else {
+      res.json(team);
+    }
+  });
+});
+
 router.post("/team", (req, res, next) => {
   const teamName = req.body;
   console.log("REQUEST BODY TO CREATE TEAM", teamName);
@@ -23,15 +36,5 @@ router.post("/team", (req, res, next) => {
     })
     .catch(error => next(error));
 });
-
-// router.post("/team", async function(req, res, next) {
-//   try {
-//     const posted_name = await Team.create({ name: posted_name });
-//     console.log("Created team");
-//     res.send(posted_name);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
 
 module.exports = router;
